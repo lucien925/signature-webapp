@@ -83,6 +83,7 @@ $(function() {
 	// 依赖全局变量 coordinates、guideLines
 	function handleLabelDrag(e, ui) {
 		if(resistance) return false
+			
 		// if(resistance) {
 		// 	console.log('drag resistance')
 		// 	if(!resistanceTimer) {
