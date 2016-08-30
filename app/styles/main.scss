@@ -3,6 +3,12 @@
     float: left;
 }
 /* commmon style end*/
+html {
+    font-family: "PingFang SC", Helvetica, "Helvetica Neue", "微软雅黑", Tahoma, Arial, sans-serif;
+}
+html, body {
+    height: 100%
+}
 [draggable="true"] {
     cursor: move;
 }
@@ -10,8 +16,9 @@ body {
     background-color: #edeff0;
 }
 .container {
-    width: 1200px;
-    margin: 0 auto
+    width: 1400px;
+    margin: 0 auto;
+    height: 100%;
 }
 .side-container,
 .panel-container {
@@ -50,6 +57,7 @@ body {
 }
 .panel-container {
     margin-left: 300px;
+    height: 100%;
 }
 .panel-item {
     padding: 10px 20px;
@@ -68,7 +76,9 @@ body {
 .signature-props {
     padding: 10px 0;
     margin-left: -6px;
-    .props-item {
+    
+}
+.props-item {
         height: 30px;
         margin: 8px 6px;
         display: inline-block;
@@ -78,12 +88,12 @@ body {
             font-size: 14px;
         }
     }
-}
 .signature-container {
     position: relative;
-    border: 1px dashed #333;
-    min-height: 205px;
+    min-height: 500px;
     margin-top: 20px;
+    background-color: #edeff0;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1) inset;
     &.over {
         border-color: #ff0000;
     }
@@ -100,7 +110,7 @@ body {
     display: none;
     position: absolute;
     border-style: dashed;
-    border-color: #6EB1EB;
+    border-color: red;
     border-width: 0;
     z-index: 4;
 }
