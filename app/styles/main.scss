@@ -1,0 +1,119 @@
+/* commmon style */
+.fl {
+    float: left;
+}
+/* commmon style end*/
+[draggable="true"] {
+    cursor: move;
+}
+body {
+    background-color: #edeff0;
+}
+.container {
+    width: 1200px;
+    margin: 0 auto
+}
+.side-container,
+.panel-container {
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.side-container {
+    width: 280px;
+    min-height: 400px;
+}
+.side-item {
+    position: relative;
+    height: 60px;
+    border-bottom: 1px solid #edf1f2;
+    & > a {
+        padding: 0 10px 0 15px;
+        display: block;
+        line-height: 60px;
+        color: #787d82;
+        font-size: 14px;
+    }
+    &.selected::before {
+        position: absolute;
+        content: '';
+        top: 0;
+        left: -20px;
+        width: 2px;
+        background-color: #ff0000;
+        height: .6rem;
+    }
+    &.selected {
+        & > a {
+            color: #cc0000
+        }
+    }
+}
+.panel-container {
+    margin-left: 300px;
+}
+.panel-item {
+    padding: 10px 20px;
+    min-height: 500px;
+    .panel-header {
+        font-weight: normal;
+        font-size: 16px;
+        color: #363d40;
+        line-height: 49px;
+        border-bottom: 1px solid #eceff0;
+    }
+    .panel-body {
+
+    }
+}
+.signature-props {
+    padding: 10px 0;
+    margin-left: -6px;
+    .props-item {
+        height: 30px;
+        margin: 8px 6px;
+        display: inline-block;
+        .props-item-label {
+            height: 30px;
+            line-height: 30px;
+            font-size: 14px;
+        }
+    }
+}
+.signature-container {
+    position: relative;
+    border: 1px dashed #333;
+    min-height: 205px;
+    margin-top: 20px;
+    &.over {
+        border-color: #ff0000;
+    }
+    & > [data-role="label"] {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background: #000;
+    }
+}
+
+.guide-line-x,
+.guide-line-y {
+    display: none;
+    position: absolute;
+    border-style: dashed;
+    border-color: #6EB1EB;
+    border-width: 0;
+    z-index: 4;
+}
+.guide-line-x {
+    width: 0;
+    height: 100%;
+    border-left-width: 1px;
+    left: 200px;
+    
+}
+.guide-line-y {
+    top: 70px;
+    height: 0;
+    border-bottom-width: 1px;
+    width: 100%;
+}
