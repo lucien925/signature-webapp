@@ -4,7 +4,8 @@ $(function() {
 	// 选择DOM元素
 	var $container = $('.signature-container'),
 		$guideLineX = $('.guide-line-x'),
-		$guideLineY = $('.guide-line-y')
+		$guideLineY = $('.guide-line-y'),
+		$propsItem = $('.props-item')
 
 	// 全局变量
 	var coordinates = {},
@@ -14,28 +15,47 @@ $(function() {
 		],
 		guideLines = [],
 		resistanceTimer = null,
-		resistance = false
+		resistance = false,
+		$dragEle = null
 
 
 	init()
+
 	$container.on({
-		dragover: function() {
+		dragover: function(e) {
+			e.preventDefault()
 			var $this = $(this)
 			$this.addClass('over')
 		},
-		dragleave: function() {
+		dragleave: function(e) {
 			var $this = $(this)
 			$this.removeClass('over')
 		},
-		drag: function() {
-			var $this = $(this)
+		drop: function(e) {
+			var $this = $(this),
+				$dragEleClone, coordinate, uid
+			e.preventDefault()
 			$this.removeClass('over')
+			if($dragEle) {
+				$dragEleClone = $dragEle.clone()
+				$dragEleClone.draggable({
+					drag: handleLabelDrag,
+					stop: handleLabelStop
+				})
+				$container.append($dragEleClone)
+				coordinate = getCoordinate($dragEleClone)
+				uid = helper.generateUID()
+				coordinates[uid] = coordinate
+			}
 		}
 	})
 	// 初始化函数
 	function init() {
 		var $labels = $container.find('[data-role="label"]'),
 			coordinate
+		$propsItem.on('dragstart', function() {
+			$dragEle = $(this)
+		})
 		$labels.each(function(label) {
 			var $this = $(this),
 				uid = helper.generateUID()
@@ -46,10 +66,7 @@ $(function() {
 			// 给签名面板的控件加上拖拽
 			$this.draggable({
 				drag: handleLabelDrag,
-				stop: handleLabelStop,
-				snap: '.guide-line-x',
-				snapMode: 'outer',
-				snapTolerance: 5
+				stop: handleLabelStop
 			})
 		})
 	}
@@ -64,11 +81,11 @@ $(function() {
 				x: (_width / 2) + _position.left,
 				y: (_height / 2) + _position.top
 			}
+		console.log(_position)
 		// 按照出现辅助线的优先级定义坐标在数组中的位置
 		// 如果优先级高的坐标点匹配出现辅助线，那么后面
 		// 优先级的坐标点就不进行匹配
 		var coordinate = [
-				
 				[_center.x, _center.y], // center
 				[_position.left, _position.top], //left-top
 				[_position.left + _width, _position.top], // right-top
@@ -82,21 +99,7 @@ $(function() {
 	// 处理签名面板的拖拽控件拖拽的处理函数
 	// 依赖全局变量 coordinates、guideLines
 	function handleLabelDrag(e, ui) {
-		if(resistance) return false
-			
-		// if(resistance) {
-		// 	console.log('drag resistance')
-		// 	if(!resistanceTimer) {
-		// 		resistanceTimer = setTimeout(function() {
-		// 			console.log('drag resistance end')
-		// 			resistance = false
-		// 			clearTimeout(resistanceTimer)
-		// 			resistanceTimer = null
-		// 		}, 300)
-		// 	}
-		// 	return false
-		// }
-		console.log(e, ui)
+
 		guideLines.length = 0
 		// 隐藏X、Y轴辅助线
 		$guideLineX.hide()
