@@ -1,6 +1,6 @@
-$(function() (
+$(function() {
+	
 	'use strict'
-
 	var CONFIG = {
 
 		textTmpl: '<div class="">' + 
@@ -19,17 +19,17 @@ $(function() (
 
 	function Signature(opts) {
 		this.$container = $(opts.container)
-		this.data = opts.data
+		this.data = []
 		this.focusEle = null
 		this.$snapLineX = $(CONFIG.snapLineXTmpl)
 		this.$snapLineY = $(CONFIG.snapLineYTmpl)
-
+		this.init()
 	}
 
 	Signature.prototype.init = function() {
-		var $labels = this.$container.find('[data-role="label"]')
-			width = $container.width(),
-			height = $container.height()
+		var $labels = this.$container.find('[data-role="label"]'),
+			width = this.$container.width(),
+			height = this.$container.height()
 		this.globalCenter = [width / 2, height / 2]
 		this.$container.append(this.$snapLineX, this.$snapLineY)
 		if($labels.length > 0) {
@@ -45,7 +45,7 @@ $(function() (
 				width = $this.width(),
 				height = $this.height(),
 				coordinate
-			$ele.data('')
+			//$ele.data('')
 			coordinate = self._getCoordinate(width, height, position.left, position.top)
 			self._addData(coordinate)
 			self._bindEvent($this)
@@ -76,7 +76,6 @@ $(function() (
 		$ele.on('click', function() {
 			self.focusEle = $(this)
 		})
-		// draggable
 		$ele.draggable({
 			drag: function(l, t) {
 				self.handleDrag()
@@ -112,5 +111,5 @@ $(function() (
 		// container blur		
 	}
 
-
-))
+	window.Signature = Signature
+})

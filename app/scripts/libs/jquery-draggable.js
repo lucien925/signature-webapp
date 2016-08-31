@@ -66,9 +66,7 @@ $(function() {
 					params.left = _position.left,
 					params.top = _position.top
 				})
-			})
-
-			
+			})		
 		}
 	})
 })

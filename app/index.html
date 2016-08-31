@@ -59,8 +59,16 @@
             </div>
         </div>
         <script src="scripts/libs/jquery.js"></script>
-        <script src="scripts/libs/jquery-ui.js"></script>
-        <script src="scripts/libs/helper.js"></script>
-        <script src="scripts/libs/label.js"></script>
+        <script src="scripts/libs/jquery-draggable.js"></script>
+        <script src="scripts/Signature.js"></script>
+        <script>
+            $(function() {
+
+                new Signature({
+                    container: '.signature-container'
+                })
+                
+            })
+        </script>
     </body>
 </html>
