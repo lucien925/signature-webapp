@@ -44,11 +44,10 @@ $(function() (
 				position = $this.position(),
 				width = $this.width(),
 				height = $this.height(),
-				uuid = helper.generateUUID(),
 				coordinate
-
+			$ele.data('')
 			coordinate = self._getCoordinate(width, height, position.left, position.top)
-			self._addData(uuid, coordinate)
+			self._addData(coordinate)
 			self._bindEvent($this)
 		})
 	}
@@ -56,17 +55,21 @@ $(function() (
 	Signature.prototype._getCoordinate = function(w, h, l, t) {
 
 		return [
-			[l, t],
-			[l + w, t],
-			[l, t + h],
-			[l + w, t + h]
+			l + (w / 2),		//   center-x
+			t + (h / 2),		//	 center-y
+			t,					//	 top
+			t + h,				//	 bottom
+			l,					//   left
+			l + h				//	 right
 		]
 	}
 
-	Signature.prototype._addData = function(id, coordinate) {
-		this.data[uid] = coordinate
+	Signature.prototype._addData = function(coordinate) {
+		this.data.push(coordinate)
 	}
-
+	Signature.prototype.handleDrag = function(left, top) {
+		
+	}
 	Signature.prototype._bindEvent = function($ele) {
 		var self = this
 		// click
@@ -75,8 +78,8 @@ $(function() (
 		})
 		// draggable
 		$ele.draggable({
-			drag: function(e, ui) {
-				self.handleDragLeave()
+			drag: function(l, t) {
+				self.handleDrag()
 			},
 			stop: function() {
 
