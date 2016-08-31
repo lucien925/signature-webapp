@@ -1,5 +1,5 @@
 $(function() {
-	
+
 	'use strict'
 	var CONFIG = {
 
@@ -46,13 +46,13 @@ $(function() {
 				height = $this.height(),
 				coordinate
 			//$ele.data('')
-			coordinate = self._getCoordinate(width, height, position.left, position.top)
+			coordinate = self._getKeyPlace(width, height, position.left, position.top)
 			self._addData(coordinate)
 			self._bindEvent($this)
 		})
 	}
 
-	Signature.prototype._getCoordinate = function(w, h, l, t) {
+	Signature.prototype._getKeyPlace = function(w, h, l, t) {
 
 		return [
 			l + (w / 2),		//   center-x
@@ -67,18 +67,33 @@ $(function() {
 	Signature.prototype._addData = function(coordinate) {
 		this.data.push(coordinate)
 	}
-	Signature.prototype.handleDrag = function(left, top) {
-		
+
+	Signature.prototype._refreshCanvas = function(c, index) {
+		var i = 0, j = 0
+		for(; i < data.length; i++) {
+			for(; j < data.length; j++) {
+				if(j === index) {
+					break
+				}
+				if(data[j][i] === c[i]) {
+					
+				}
+			}
+		}
 	}
+
 	Signature.prototype._bindEvent = function($ele) {
-		var self = this
+		var self = this,
+			current
 		// click
 		$ele.on('click', function() {
 			self.focusEle = $(this)
 		})
 		$ele.draggable({
-			drag: function(l, t) {
-				self.handleDrag()
+			drag: function(w, h, l, t) {
+					var	coordinate = self._getKeyPlace(width, height, l, t)
+						index = $ele.data('index')
+				self._refreshCanvas(coordinate, index)
 			},
 			stop: function() {
 
@@ -94,9 +109,7 @@ $(function() {
 		// container dragover/drop
 		self.$container.on({
 			dragover: function(e) {
-				if(self.$container.hasClass('over')) {
-					return
-				}
+				
 				self.$container.addClass('over')
 			},
 			dragleave: function(e) {

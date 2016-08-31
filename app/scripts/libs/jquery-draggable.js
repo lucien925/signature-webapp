@@ -16,7 +16,9 @@ $(function() {
 					top: 0
 				},
 				opts = opts || {},
-				position = $this.position()
+				position = $this.position(),
+				width = $this.width(),
+				height = $this.height()
 			params.left = position.left
 			params.top = position.top
 			
@@ -38,7 +40,7 @@ $(function() {
 						top = params.top + disY
 
 					if(opts.drag) {
-						var result = opts.drag(left, top)
+						var result = opts.drag(width, height, left, top)
 						if(result === false) {
 							return
 						}
@@ -54,7 +56,7 @@ $(function() {
 					$this.off('mousemove')
 					$this.off('mouseup')
 					if(opts.stop) {
-						opts.stop()
+						opts.stop($this)
 					}
 					var _position = $this.position()
 					// 在拖拽范围没达到临界值时，也同时触发点击事件
