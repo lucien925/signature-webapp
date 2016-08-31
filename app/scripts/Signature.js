@@ -12,13 +12,17 @@ $(function() (
 							'<img src="" alt="">' +
 						'</div>' +
 						'<p></p>' +
-					'</div>'
+					'</div>',
+		snapLineXTmpl: '<div class="guide-line-x"></div>',
+		snapLineYTmpl: '<div class="guide-line-y"></div>'
 	}
 
 	function Signature(opts) {
 		this.$container = $(opts.container)
 		this.data = opts.data
 		this.focusEle = null
+		this.$snapLineX = $(CONFIG.snapLineXTmpl)
+		this.$snapLineY = $(CONFIG.snapLineYTmpl)
 
 	}
 
@@ -27,6 +31,7 @@ $(function() (
 			width = $container.width(),
 			height = $container.height()
 		this.globalCenter = [width / 2, height / 2]
+		this.$container.append(this.$snapLineX, this.$snapLineY)
 		if($labels.length > 0) {
 			this.initStaffs($labels)
 		}
@@ -71,7 +76,7 @@ $(function() (
 		// draggable
 		$ele.draggable({
 			drag: function(e, ui) {
-
+				self.handleDragLeave()
 			},
 			stop: function() {
 

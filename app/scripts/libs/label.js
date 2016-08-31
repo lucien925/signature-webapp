@@ -1,4 +1,4 @@
-$(function() {
+
 	'use strict'
 
 	// 选择DOM元素
@@ -16,7 +16,8 @@ $(function() {
 		guideLines = [],
 		resistanceTimer = null,
 		resistance = false,
-		$dragEle = null
+		$dragEle = null,
+		count = 0
 
 
 	init()
@@ -45,6 +46,7 @@ $(function() {
 				$container.append($dragEleClone)
 				coordinate = getCoordinate($dragEleClone)
 				uid = helper.generateUID()
+				$dragEleClone.data('uid', uid)
 				coordinates[uid] = coordinate
 			}
 		}
@@ -81,7 +83,6 @@ $(function() {
 				x: (_width / 2) + _position.left,
 				y: (_height / 2) + _position.top
 			}
-		console.log(_position)
 		// 按照出现辅助线的优先级定义坐标在数组中的位置
 		// 如果优先级高的坐标点匹配出现辅助线，那么后面
 		// 优先级的坐标点就不进行匹配
@@ -117,7 +118,7 @@ $(function() {
 				for(var j = 0, lenJ = coordinates[id].length; j < lenJ; j++ ) {
 					var inner = coordinates[id][j],
 						guideLine = {}
-
+					++count
 					if(outer[0] === inner[0]) {
 						guideLine.dir = 'x'
 						guideLine.position = inner[0]
@@ -166,5 +167,3 @@ $(function() {
 		}
 
 	}
-
-})
