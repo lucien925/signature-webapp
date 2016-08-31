@@ -1,6 +1,13 @@
 $(function() {
-	// 史上最简单的jQuery拖拽插件
+
 	// by lucienyu
+	// 史上最简单的jQuery拖拽插件
+	// opts [Object] 
+	// {
+	// 	drag: [Function],   => 拖拽时触发
+	// 	stop: [Function]	=> 拖拽停止时触发
+	// }
+
 	$.fn.extend({
 		draggable: function(opts) {
 			var $this = $(this),
@@ -50,8 +57,10 @@ $(function() {
 						opts.stop()
 					}
 					var _position = $this.position()
+					// 在拖拽范围没达到临界值时，也同时触发点击事件
 					if(Math.abs(_position.left - params.left) < 5 
 						&& Math.abs(_position.top - params.top) < 5) {
+						// 避免触发click事件
 						$this.trigger('specialClick')
 					}
 					params.left = _position.left,

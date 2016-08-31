@@ -70,16 +70,36 @@ $(function() (
 		})
 		// draggable
 		$ele.draggable({
-			drag: function(e, ui) {},
-			stop: function() {}
+			drag: function(e, ui) {
+
+			},
+			stop: function() {
+
+			}
 		})
 		// remove
 
 		// contextmenu
 		$ele.on('contextmenu', function(e) {
 			e.preventDefault()
+			self._showContextMenu(e)
+		})
+		// container dragover/drop
+		self.$container.on({
+			dragover: function(e) {
+				if(self.$container.hasClass('over')) {
+					return
+				}
+				self.$container.addClass('over')
+			},
+			dragleave: function(e) {
+				self.$container.removeClass('over')
+			},
+			drop: function(e) {
+				self.$container.removeClass('over')
+				// @todo: 处理属性拖拽带绘制面板的逻辑
 
-
+			}
 		})
 		// container blur		
 	}
