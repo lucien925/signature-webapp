@@ -51,13 +51,14 @@
                     <div class="panel-footer">
                         <button>发布模板</button>
                         <button>保存模板</button>
-                        <button>生成签名</button>
+                        <button id="three">生成签名</button>
                     </div>
                 </div>
             </div>
         </div>
         <script src="scripts/libs/jquery.js"></script>
         <script src="scripts/libs/jquery-draggable.js"></script>
+        <script src="scripts/libs/html2canvas.js"></script>
         <script src="scripts/Signature.js"></script>
         <script>
             $(function() {
@@ -65,7 +66,11 @@
                 new Signature({
                     container: '.signature-container'
                 })
-                
+                $('#three').click(function() {
+                    html2canvas($('.signature-container').get(0)).then(function(canvas) {
+                        $('body').append(canvas)
+                    })
+                })
             })
         </script>
     </body>
