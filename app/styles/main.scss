@@ -16,7 +16,7 @@ body {
     background-color: #edeff0;
 }
 .container {
-    width: 1400px;
+    width: 1200px;
     margin: 0 auto;
     height: 100%;
 }
@@ -26,7 +26,7 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .side-container {
-    width: 280px;
+    width: 260px;
     min-height: 400px;
 }
 .side-item {
@@ -56,7 +56,7 @@ body {
     }
 }
 .panel-container {
-    margin-left: 300px;
+    margin-left: 280px;
     height: 100%;
 }
 .panel-item {
@@ -126,4 +126,25 @@ body {
     height: 0;
     border-bottom-width: 1px;
     width: 100%;
+}
+.context-menu {
+    position: absolute;
+    background: #fff;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    li {
+        padding: 0 10px;
+        & > a {
+            display: block;
+            height: 30px;
+            min-width: 60px;
+            text-align: center;
+            line-height: 30px;
+            font-size: 14px;
+            color: #000;
+        }
+        &:hover {
+            background: #ccc;
+        }
+
+    }
 }

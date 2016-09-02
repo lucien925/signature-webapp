@@ -16,8 +16,8 @@ $(function() {
 		snapLineXTmpl: '<div class="guide-line-x"></div>',
 		snapLineYTmpl: '<div class="guide-line-y"></div>',
 		contextMenu: '<ul class="context-menu">' +
-						'<li><a href="javascript:void(0)">修改</a></li>' +
-						'<li><a href="javascript:void(0)">删除</a></li>' +
+						'<li><a data-action="alter" href="javascript:void(0)">修改</a></li>' +
+						'<li><a data-action="delete" href="javascript:void(0)">删除</a></li>' +
 					 '</ul>'
 	}
 
@@ -69,10 +69,39 @@ $(function() {
 			drop: function(e) {
 				self.$container.removeClass('over')
 				// @todo: 处理属性拖拽带绘制面板的逻辑
-
+			},
+			click: function(e) {
+				self.$contextMenu.hide()
+			},
+			contextmenu: function(e) {
+				e.preventDefault()
+				e.stopPropagation()
 			}
 		})
-		// container blur
+		self.$container.on('contextmenu', '[data-role="label"]', function(e) {
+			e.preventDefault()
+			e.stopPropagation()
+
+			var $this = $(this),
+				position = $this.position()
+			$this.off('mousemove mouseup')
+			self.$contextMenuCtx = $this
+			position.left += e.offsetX
+			position.top += e.offsetY
+
+			self._showContextMenu(position)
+		})
+		
+		self.$contextMenu.on('click', 'a', function() {
+			var $target = $(this),
+				action = $(this).attr('data-action')
+			if(action === 'alter') {
+
+			} else if(action === 'delete') {
+				self._deleteEle(self.$contextMenuCtx)
+			}
+
+		})
 	}
 
 	Signature.prototype._getKeyPlace = function(w, h, l, t) {
@@ -145,6 +174,7 @@ $(function() {
 		this.$snapLineY.hide()
 	}
 	Signature.prototype._deleteEle = function($ele) {
+		
 		var index = parseInt($ele.data('index'), 10)
 		this.data.splice(index, 1)
 
@@ -175,7 +205,7 @@ $(function() {
 
 					index = parseInt($ele.data('index'), 10)
 					coordinate = self._getKeyPlace(w, h, l, t)
-					
+
 					self._hideSnapLines()
 					self._refreshCanvas(coordinate, index)
 			},
@@ -184,18 +214,6 @@ $(function() {
 					// 更新数据
 					self.data[index] = coordinate
 			}
-		})
-		$ele.on('click', '.del', self._deleteEle($ele))
-		// contextmenu
-		$ele.on('contextmenu', function(e) {
-			e.preventDefault()
-			// 计算右键菜单选项应该显示的位置
-			var position = $ele.position()
-			position.left += e.clientX
-			position.top += e.clientY
-			// 修改右键呼出的菜单栏所对应该的操作上下文
-			self.$contextMenuCtx = $ele
-			self._showContextMenu(position, $ele)
 		})
 				
 	}

@@ -24,6 +24,7 @@ $(function() {
 			
 			$this.on('mousedown', function(e) {
 				e.preventDefault()
+				e.stopPropagation()
 				var startX = e.clientX,
 					startY = e.clientY
 				$(window).on('selectstart', function() {
@@ -31,6 +32,7 @@ $(function() {
 				})
 				$this.on('mousemove', function(e) {
 					e.preventDefault()
+					e.stopPropagation()
 
 					var nowX = e.clientX,
 						nowY = e.clientY,
@@ -53,6 +55,7 @@ $(function() {
 
 				$this.on('mouseup', function(e) {
 					e.preventDefault()
+					e.stopPropagation()
 					$this.off('mousemove')
 					$this.off('mouseup')
 					if(opts.stop) {
