@@ -2,11 +2,6 @@ $(function() {
 
 	// by lucienyu
 	// 史上最简单的jQuery拖拽插件
-	// opts [Object] 
-	// {
-	// 	drag: [Function],   => 拖拽时触发
-	// 	stop: [Function]	=> 拖拽停止时触发
-	// }
 
 	$.fn.extend({
 		draggable: function(opts) {
@@ -18,19 +13,18 @@ $(function() {
 				opts = opts || {},
 				position = $this.position(),
 				width = $this.width(),
-				height = $this.height()
+				height = $this.height(),
+				$document = $(document)
 			params.left = position.left
 			params.top = position.top
 			
 			$this.on('mousedown', function(e) {
-				e.preventDefault()
-				e.stopPropagation()
 				var startX = e.clientX,
 					startY = e.clientY
 				$(window).on('selectstart', function() {
 					return false
 				})
-				$this.on('mousemove', function(e) {
+				$document.on('mousemove', function(e) {
 					e.preventDefault()
 					e.stopPropagation()
 
@@ -53,11 +47,10 @@ $(function() {
 					})
 				})
 
-				$this.on('mouseup', function(e) {
+				$document.on('mouseup', function(e) {
 					e.preventDefault()
 					e.stopPropagation()
-					$this.off('mousemove')
-					$this.off('mouseup')
+					$document.off('mousemove mouseup')
 					if(opts.stop) {
 						opts.stop($this)
 					}
