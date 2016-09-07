@@ -43,7 +43,10 @@ $(function() {
 		propTextTmpl: 	'<div data-role="label" data-type="{{type}}" data-label="{{label}}">' +
 							'<input type="text">' +
 							'<span class="label-value">{{value}}</span>'+
-						'</div>'
+						'</div>',
+		propImageTmpl: '<div data-role="label" data-type="{{type}}" data-label="{{label}}">' +
+					   	   '<img src="../images/lucienyu.png" width="80" height="80">' + 
+					   '</div>'
 	}
 
 	function Signature(opts) {
@@ -73,6 +76,54 @@ $(function() {
 		}
 		this.initContainerEvent()
 		this.initPropsEvent()
+		this.initToolbarEvent()
+	}
+
+	Signature.prototype.initToolbarEvent = function() {
+		var self = this
+		self.$imageUploadInput = $('.toolbar-image-upload > input'),
+		self.$fontSizeInput = $('.toolbar-font-size > input'),
+		self.$fontFamilySelect = $('.toolbar-font-family > select'),
+		self.$fontColorInput = $('.toolbar-font-color > input')
+
+		self.$imageUploadInput.on('change', function(e) {
+			var file = e.target.files[0],
+				reader = new FileReader(),
+				URL = window.URL || window.webkitURL,
+				blobUrl
+
+			reader.onload = function(e) {
+				var result = e.target.result
+				self.$focusCtx.find('img').attr('src', result)
+			}
+			reader.readAsDataURL(file)
+		})	
+
+		// input type=number 
+		self.$fontSizeInput.on('input', function() {
+			var $this = $(this),
+				value = $this.val()
+			self.$focusCtx.css({
+				fontSize: value + 'px'
+			})
+		})
+
+		self.$fontFamilySelect.on('change', function() {
+			var $this = $(this),
+				value = $this.val()
+
+			self.$focusCtx.css({
+				fontFamily: value
+			})
+		})
+
+		self.$fontColorInput.on('change', function() {
+			var $this = $(this),
+				value = $this.val()
+			self.$focusCtx.css({
+				color: value
+			})
+		})
 	}
 
 	Signature.prototype.initPropsEvent = function() {
@@ -81,12 +132,10 @@ $(function() {
 		$props.on('dragstart', function(e) {
 			var $this = $(this),
 				label = $this.attr('data-label'),
-				name = $this.attr('data-name'),
 				type = $this.attr('data-type')
 
 			self.propsInfo.label = label
 			self.propsInfo.type = type
-			self.propsInfo.name = name
 		})
 	}
 
@@ -103,26 +152,39 @@ $(function() {
 			drop: function(e) {
 				self.$container.removeClass('over')
 
-				var name = self.propsInfo.name,
-					label = self.propsInfo.label,
-					type = self.propsInfo.type,
+				var label = self.propsInfo.label,
+					type = self.propsInfo.type
+
+				var html = ''
+				if(type === 'text') {
 					html = TMPL_CONFIG.propTextTmpl.replace('{{label}}', label)
 												   .replace('{{type}}', type)
 												   .replace('{{prefix}}', config[label].prefix)
-												   .replace('{{value}}', config[label].default),
-					styles = {},
+												   .replace('{{value}}', config[label].default)
+				} else if(type === 'image') {
+					html = TMPL_CONFIG.propImageTmpl.replace('{{label}}', label)
+												   .replace('{{type}}', type)
+				}
+				var styles = {},
 					$ele = $(html),
 					width, height
 
 				self.$container.append($ele)
 				width = $ele.width(),
 				height = $ele.height()
-				styles = {
-					left: e.offsetX - (width / 2),
-					top: e.offsetY - (height / 2),
-					fontFamily: config[label].fontFamily,
-					fontSize: config[label].fontSize,
-					color: config[label].color
+				if(type === 'text') {
+					styles = {
+						left: e.offsetX - (width / 2),
+						top: e.offsetY - (height / 2),
+						fontFamily: config[label].fontFamily,
+						fontSize: config[label].fontSize + 'px',
+						color: config[label].color
+					}
+				} else if(type === 'image') {
+					styles = {
+						left: e.offsetX - (width / 2),
+						top: e.offsetY - (height / 2)
+					}
 				}
 
 				$ele.css(styles)
@@ -164,6 +226,7 @@ $(function() {
 
 		})
 		self.$container.on('mousedown', '[data-role="label"]', function() {
+
 			var $this = $(this),
 				label = $this.attr('data-label'),
 				type = $this.attr('data-type'),
@@ -174,7 +237,7 @@ $(function() {
 							'left',
 							'top'
 						])
-			self.contextMenuCtx
+			
 			self.$container.find('[data-role="label"]').removeClass('selected')
 			$this.addClass('selected')
 			self._adjustToolbar(type, styles)
@@ -202,9 +265,9 @@ $(function() {
 			}
 			$fontColorInput.val(color)
 		} else if(type === 'image') {
-			$fontSizeInput.props('disabled', '')
-			$fontFamilySelect.props('disabled', '')
-			$fontColorInput.props('disabled', '')
+			$fontSizeInput.prop('disabled', false)
+			$fontFamilySelect.prop('disabled', false)
+			$fontColorInput.prop('disabled', false)
 		}
 	}
 
@@ -214,6 +277,10 @@ $(function() {
 			$fontSizeInput = $('.toolbar-font-size > input'),
 			$fontFamilySelect = $('.toolbar-font-family > select'),
 			$fontColorInput = $('.toolbar-font-color > input')
+		$imageLabel.removeClass('disabled')
+		$fontSizeInput.prop('disabled', false)
+		$fontFamilySelect.prop('disabled', false)
+		$fontColorInput.prop('disabled', false)
 
 	}
 
@@ -249,9 +316,6 @@ $(function() {
 		this.data.push(coordinate)
 	}
 
-	Signature.prototype._compileTmpl = function(tmpl) {
-
-	}
 
 	Signature.prototype._refreshCanvas = function(c, index) {
 		var i = 0, j = 0
@@ -324,13 +388,13 @@ $(function() {
 	}
 
 	Signature.prototype._bindEvent = function($ele) {
-
+ 
 		var self = this,
 			current, coordinate, index
 
 		// click
 		$ele.on('mousedown', function() {
-			// 获取当前鼠标点击呼出的修改栏上下文
+			// 修改当前绘制面板焦点元素上下文
 			self.$focusCtx = $ele
 		})
 		$ele.draggable({
@@ -356,7 +420,7 @@ $(function() {
 				$innerInput = $this.find('input'),
 				$innerSpan = $this.find('.label-value')
 			$innerSpan.hide()
-			$innerInput.show().val($innerSpan.text())
+			$innerInput.show().focus().val($innerSpan.text())
 
 			$innerInput.on('blur', function() {
 				var value = $innerInput.val()
@@ -364,8 +428,7 @@ $(function() {
 					self._deleteEle($ele)
 				} else {
 					$innerInput.hide()
-					$innerSpan.show()
-					$innerSpan.text(value)
+					$innerSpan.show().text(value)
 				}
 			})
 

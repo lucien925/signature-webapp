@@ -3,7 +3,7 @@ var config = {
 	wechat: {
 		default: '微信号',
 		prefix: '',
-		fontFamily: 'Microsoft Yahei',
+		fontFamily: '微软雅黑',
 		fontSize: '14',
 		color: '#000'
 	},  // 微信号

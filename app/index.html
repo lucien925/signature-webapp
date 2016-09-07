@@ -8,6 +8,7 @@
 
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
         <link rel="stylesheet" href="styles/reset.css">
+        <link rel="stylesheet" href="styles/cropper.min.css">
         <link rel="stylesheet" href="styles/main.css">
     </head>
     <body>
@@ -22,69 +23,74 @@
                     <h3 class="panel-header">制作模板</h3>
                     <div class="panel-body">
                         <ul class="signature-props">
-                            <li class="props-item" draggable="true" data-label="en">
+                            <li class="props-item" draggable="true" data-label="en" data-type="text">
                                 <div class="props-item-label">
                                     <span>英文名</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true" data-label="cn">
+                            <li class="props-item" draggable="true" data-label="cn" data-type="text">
                                 <div class="props-item-label">
                                     <span>中文名</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true" data-label="department">
+                            <li class="props-item" draggable="true" data-label="department" data-type="text">
                                 <div class="props-item-label">
                                     <span>部门</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true">
+                            <li class="props-item" draggable="true" data-label="level" data-type="text">
                                 <div class="props-item-label">
                                     <span>职级</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true">
+                            <li class="props-item" draggable="true" data-label="telephone" data-type="text">
                                 <div class="props-item-label">
                                     <span>分机号</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true">
+                            <li class="props-item" draggable="true" data-label="qq" data-type="text">
                                 <div class="props-item-label">
                                     <span>QQ</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true">
+                            <li class="props-item" draggable="true" data-label="wechat" data-type="text">
                                 <div class="props-item-label">
                                     <span>微信</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true">
+                            <li class="props-item" draggable="true" data-label="email" data-type="text">
                                 <div class="props-item-label">
                                     <span>Email</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true">
+                            <li class="props-item" draggable="true" data-label="location" data-type="text">
                                 <div class="props-item-label">
                                     <span>办公地点</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true">
+                            <li class="props-item" draggable="true" data-label="signature" data-type="text">
                                 <div class="props-item-label">
                                     <span>个性签名</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true">
+                            <li class="props-item" draggable="true" data-label="qqQr" data-type="image">
                                 <div class="props-item-label">
                                     <span>QQ二维码</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true">
+                            <li class="props-item" draggable="true" data-label="avater" data-type="image">
                                 <div class="props-item-label">
                                     <span>自定义头像</span>
                                 </div>
                             </li>
-                            <li class="props-item" draggable="true">
+                            <li class="props-item" draggable="true" data-label="wechatQr" data-type="image">
                                 <div class="props-item-label">
                                     <span>微信二维码</span>
+                                </div>
+                            </li>
+                            <li class="props-item" draggable="true" data-label="logo" data-type="image">
+                                <div class="props-item-label">
+                                    <span>LOGO</span>
                                 </div>
                             </li>
                         </ul>
@@ -111,35 +117,7 @@
 
                         </div>
                         <div class="signature-container">
-                            <div data-role="label" draggable="true" style="left: 200px;top:60px">label one</div>
-                            <div data-role="label" draggable="true" style="left: 400px;top:20px">label two</div>
-                            <!-- <div class="alter-modal alter-modal-image">
-                                <div class="alter-group">
-                                    <label for="">项目:</label>
-                                    <span>微信二维码</span>
-                                </div>
-                                <div class="alter-preview"></div>
-                                <div class="alter-footer">
-                                    <button>上传图片</button>
-                                </div>
-                            </div>
-                            <div class="alter-modal alter-modal-text">
-                                <div class="alter-group">
-                                    <label for="">项目:</label>
-                                    <span>微信二维码</span>
-                                </div>
-                                <div class="alter-group">
-                                    <label for="">内容:</label>
-                                    <input type="text">
-                                </div>
-                                <div class="alter-group">
-                                    <label for="">内容:</label>
-                                    <input type="color">
-                                </div>
-                                <div class="alter-footer">
-                                    <button></button>
-                                </div>
-                            </div> -->
+                            
                         </div>
                     </div>
                     <div class="panel-footer">
@@ -150,9 +128,15 @@
                 </div>
             </div>
         </div>
+        <!-- <div class="alert-mask show"></div>
+        <div class="alert show">
+            
+        </div> -->
         <script src="scripts/libs/jquery.js"></script>
         <script src="scripts/libs/jquery.draggable.js"></script>
+        <script src="scripts/libs/cropper.min.js"></script>
         <script src="scripts/libs/html2canvas.js"></script>
+        <script src="scripts/helper.js"></script>
         <script src="scripts/Signature.js"></script>
         <script src="scripts/config.js"></script>
         <script>
@@ -162,6 +146,7 @@
                     container: '.signature-container',
                     props: '.signature-props'
                 })
+
                 $('#three').click(function() {
                     html2canvas($('.signature-container').get(0)).then(function(canvas) {
                         $('body').append(canvas)
