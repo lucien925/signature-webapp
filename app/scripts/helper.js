@@ -1,10 +1,11 @@
 $(function() {
 	'use strict'
+	
 	var helper = {}
 
 	helper.loadCropper = function(file) {
 		$('.alert-popup').addClass('open')
-		
+
 	}
 
 	helper.generateUUID = function() {
@@ -14,7 +15,7 @@ $(function() {
 	        d = Math.floor(d/16)
 	        return (c=='x' ? r : (r&0x7|0x8)).toString(16);
 	    })
-	   
+	   return uuid
 	}
 
 	helper.isRgb = function() {
@@ -27,7 +28,9 @@ $(function() {
 	 	return (rgb && rgb.length === 4) ? "#" +
 	  		("0" + parseInt(rgb[1],10).toString(16)).slice(-2) +
 	  		("0" + parseInt(rgb[2],10).toString(16)).slice(-2) +
+	  		("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : ''
 	  	
 	}
+
 	window.helper = helper
 })

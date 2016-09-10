@@ -52,7 +52,7 @@ $(function() {
 	function Signature(opts) {
 		this.$container = $(opts.container)
 		this.$props = $(opts.props)
-		this.data = []
+		this.data = {}
 		this.snapLines = []
 		this.$focusCtx = null
 		this.$snapLineX = $(TMPL_CONFIG.snapLineXTmpl)
@@ -260,14 +260,14 @@ $(function() {
 			$fontSizeInput.val(parseInt(styles.fontSize, 10))
 			$fontFamilySelect.val(styles.fontFamily)
 			var color = styles.color
-			if(isRgb(color)) {
-				color = rgb2hex(color)
+			if(helper.isRgb(color)) {
+				color = helper.rgb2hex(color)
 			}
 			$fontColorInput.val(color)
 		} else if(type === 'image') {
-			$fontSizeInput.prop('disabled', false)
-			$fontFamilySelect.prop('disabled', false)
-			$fontColorInput.prop('disabled', false)
+			$fontSizeInput.prop('disabled', true)
+			$fontFamilySelect.prop('disabled', true)
+			$fontColorInput.prop('disabled', true)
 		}
 	}
 
@@ -286,15 +286,16 @@ $(function() {
 
 	Signature.prototype.initStaffs = function($ele) {
 		var self = this
-		$ele.each(function(index) {
+		$ele.each(function() {
 			var $this = $(this),
 				position = $this.position(),
 				width = $this.width(),
 				height = $this.height(),
+				key = helper.generateUUID(),  // key <= uuid
 				coordinate
-			$this.data('index', index)
+			$this.data('key', key)
 			coordinate = self._getKeyPlace(width, height, position.left, position.top)
-			self._addData(coordinate)
+			self._addData(key, coordinate)
 			self._bindEvent($this)
 		})
 
@@ -312,32 +313,104 @@ $(function() {
 		]
 	}
 
-	Signature.prototype._addData = function(coordinate) {
-		this.data.push(coordinate)
+	Signature.prototype._addData = function(key, coordinate) {
+		this.data[key] = coordinate
 	}
 
 
-	Signature.prototype._refreshCanvas = function(c, index) {
-		var i = 0, j = 0
+	Signature.prototype._refreshCanvas = function(key, coordinate) {
+		var i = 0, j = 0,
+			k, len, data
+		// 先把辅助线全部删除
 		this.snapLines.length = 0
-		// @todo : 计算方法调整
-		for(; i < this.data.length; i++) {
-			for(; j < this.data[i].length; j++) {
-				if(i === index) {
-					break
-				}
-				if(this.data[i][j] === c[j]) {
-					var dir
-					if(j === 0 || j === 4 || j === 5) {
-						dir = 'x'
-					} else {
-						dir = 'y'
-					}
+		
+		// for(; i < this.data.length; i++) {
+		// 	for(; j < this.data[i].length; j++) {
+		// 		if(i === index) {
+		// 			break
+		// 		}
+		// 		if(this.data[i][j] === c[j]) {
+		// 			var dir
+		// 			if(j === 0 || j === 4 || j === 5) {
+		// 				dir = 'x'
+		// 			} else {
+		// 				dir = 'y'
+		// 			}
+		// 			this.snapLines.push({
+		// 				dir: dir,
+		// 				position: c[j]
+		// 			})
+		// 			break
+		// 		}
+		// 	}
+		// }
+		// for(k in this.data) {
+		// 	if(k === key) {
+		// 		continue
+		// 	}
+		// 	data = this.data[k] 
+		// 	len = data.length   // len也等于coordinate的长度
+		// 	for(; i < len; i++) {
+		// 		for()
+		// 	}
+		// }
+		len = coordinate.length
+		
+		for(; i < len; i++) {
+			// 检测是否与与绘制面板中心区域对齐
+			if(coordinate[0] === this.globalCenter[0] || coordinate[1] === this.globalCenter[1]) {
+				if(coordinate[0] === this.globalCenter[0]) {
 					this.snapLines.push({
-						dir: dir,
-						position: c[j]
+						dir: 'x',
+						position: coordinate[0]
 					})
-					break
+				} else if(coordinate[1] === this.globalCenter[1]) {
+					this.snapLines.push({
+						dir: 'y',
+						position: coordinate[1]
+					})
+				}
+				break
+			}
+			for(k in this.data) {
+				if(k === key) {
+					continue
+				}
+				data = this.data[k]
+
+				//比较当前移动的物体的x轴中心点、x轴左变、x轴右边是否和面板中的欠他元素有重叠
+				if(coordinate[0] === data[0]) {
+					this.snapLines.push({
+						dir: 'x',
+						position: coordinate[0]
+					})
+				} else if(coordinate[4] === data[4] || coordinate[4] === data[5]) {
+					this.snapLines.push({
+						dir: 'x',
+						position: coordinate[4]
+					})
+				} else if(coordinate[5] === data[4] || coordinate[5] === data[5]) {
+					this.snapLines.push({
+						dir: 'x',
+						position: coordinate[5]
+					})
+				}
+				//比较当前移动的物体的y轴中心点、y轴左变、y轴右边是否和面板中的欠他元素有重叠
+				if(coordinate[1] === data[1]) {
+					this.snapLines.push({
+						dir: 'y',
+						position: coordinate[1]
+					})	
+				} else if(coordinate[2] === data[2] || coordinate[2] === data[3]) {
+					this.snapLines.push({
+						dir: 'y',
+						position: coordinate[2]
+					})
+				} else if(coordinate[3] === data[2] || coordinate[3] === data[3]) {
+					this.snapLines.push({
+						dir: 'y',
+						position: coordinate[3]
+					})
 				}
 			}
 		}
@@ -390,7 +463,7 @@ $(function() {
 	Signature.prototype._bindEvent = function($ele) {
  
 		var self = this,
-			current, coordinate, index
+			current, coordinate, key
 
 		// click
 		$ele.on('mousedown', function() {
@@ -400,18 +473,20 @@ $(function() {
 		$ele.draggable({
 			drag: function(w, h, l, t) {
 
-					index = parseInt($ele.data('index'), 10)
+					key = $ele.data('key')
 					coordinate = self._getKeyPlace(w, h, l, t)
 
 					self._hideSnapLines()
-					self._refreshCanvas(coordinate, index)
 					self.$consoleX.text(l)
 					self.$consoleY.text(t)
+					self._refreshCanvas(key, coordinate)
+					
+					
 			},
 			stop: function() {
 					self._hideSnapLines()
 					// 更新数据
-					self.data[index] = coordinate
+					self.data[key] = coordinate
 			}
 		})
 
@@ -438,16 +513,4 @@ $(function() {
 
 	window.Signature = Signature
 
-	// http://jsfiddle.net/Mottie/xcqpF/1/light/
-	function rgb2hex(rgb){
-		rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-	 	return (rgb && rgb.length === 4) ? "#" +
-	  		("0" + parseInt(rgb[1],10).toString(16)).slice(-2) +
-	  		("0" + parseInt(rgb[2],10).toString(16)).slice(-2) +
-	  		("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : '';
-	}
-
-	function isRgb(str) {
-		return (str.match(/^rgba?/)).length > 0
-	}
 })
