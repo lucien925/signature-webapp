@@ -1,6 +1,18 @@
 $(function() {
 
 	'use strict'
+
+	 $.fn.clickToggle = function(func1, func2) {
+        var funcs = [func1, func2];
+        this.data('toggleclicked', 0);
+        this.click(function() {
+            var data = $(this).data();
+            var tc = data.toggleclicked;
+            $.proxy(funcs[tc], this)();
+            data.toggleclicked = (tc + 1) % 2;
+        });
+        return this;
+    };
 	var TMPL_CONFIG = {
 
 		textTmpl: '<div class="">' + 
@@ -82,10 +94,22 @@ $(function() {
 	Signature.prototype.initToolbarEvent = function() {
 		var self = this
 		self.$imageUploadInput = $('.toolbar-image-upload > input'),
-		self.$fontSizeInput = $('.toolbar-font-size > input'),
-		self.$fontFamilySelect = $('.toolbar-font-family > select'),
-		self.$fontColorInput = $('.toolbar-font-color > input')
+		self.$fontSizeInput = $('.toolbar-font-size input'),
+		self.$toolbarFontFamily = $('.toolbar-font-family'),
+		self.$toolbarFontColor = $('.toolbar-font-color')
 
+		self.$toolbarFontColor.clickToggle(function() {
+			$(this).addClass('selected')
+			
+		}, function() {
+			$(this).removeClass('selected')
+
+		})
+		self.$toolbarFontFamily.clickToggle(function() {
+			$(this).addClass('selected')
+		}, function() {
+			$(this).removeClass('selected')
+		})
 		self.$imageUploadInput.on('change', function(e) {
 			var file = e.target.files[0],
 				reader = new FileReader(),
@@ -100,7 +124,7 @@ $(function() {
 		})	
 
 		// input type=number 
-		self.$fontSizeInput.on('input', function() {
+		self.$fontSizeInput.on('change', function() {
 			var $this = $(this),
 				value = $this.val()
 			self.$focusCtx.css({
@@ -108,22 +132,54 @@ $(function() {
 			})
 		})
 
-		self.$fontFamilySelect.on('change', function() {
-			var $this = $(this),
-				value = $this.val()
-
+		$('.toolbar-font-size').find('.spinner-up').click(function() {
+			var fontSize = parseFloat(self.$fontSizeInput.val())
+			if(fontSize === 100) {
+				return
+			}
+			var fontSizeStr = ++fontSize + 'px'
+			self.$fontSizeInput.val(fontSizeStr)
 			self.$focusCtx.css({
-				fontFamily: value
+				fontSize: fontSizeStr
+			})
+		})
+		$('.toolbar-font-size').find('.spinner-down').click(function() {
+			var fontSize = parseFloat(self.$fontSizeInput.val())
+			if(fontSize === 12) {
+				return
+			}
+			var fontSizeStr = --fontSize + 'px'
+			self.$fontSizeInput.val(fontSizeStr)
+			self.$focusCtx.css({
+				fontSize: fontSizeStr
 			})
 		})
 
-		self.$fontColorInput.on('change', function() {
-			var $this = $(this),
-				value = $this.val()
+		self.$toolbarFontWeight = $('.toolbar-font-weight')
+		self.$toolbarFontStyle = $('.toolbar-font-style')
+		self.$toolbarFontStyle.clickToggle(function() {
+			$(this).addClass('selected')
 			self.$focusCtx.css({
-				color: value
+				fontStyle: 'italic'
+			})
+		}, function() {
+			$(this).removeClass('selected')
+			self.$focusCtx.css({
+				fontStyle: 'normal'
 			})
 		})
+		self.$toolbarFontWeight.clickToggle(function() {
+			$(this).addClass('selected')
+			self.$focusCtx.css({
+				fontWeight: 'bold'
+			})
+		}, function() {
+			$(this).removeClass('selected')
+			self.$focusCtx.css({
+				fontWeight: 'normal'
+			})
+		})
+
 	}
 
 	Signature.prototype.initPropsEvent = function() {
@@ -178,12 +234,14 @@ $(function() {
 						top: e.offsetY - (height / 2),
 						fontFamily: config[label].fontFamily,
 						fontSize: config[label].fontSize + 'px',
-						color: config[label].color
+						color: config[label].color,
+						cursor: 'move'
 					}
 				} else if(type === 'image') {
 					styles = {
 						left: e.offsetX - (width / 2),
-						top: e.offsetY - (height / 2)
+						top: e.offsetY - (height / 2),
+						cursor: 'move'
 					}
 				}
 
@@ -290,7 +348,7 @@ $(function() {
 				position = $this.position(),
 				width = $this.width(),
 				height = $this.height(),
-				key = helper.generateUUID(),  // key <= uuid
+				key = helper.generateUUID(),  // uuid => key
 				coordinate
 			$this.data('key', key)
 			coordinate = self._getKeyPlace(width, height, position.left, position.top)
@@ -322,37 +380,7 @@ $(function() {
 			k, len, data
 		// 先把辅助线全部删除
 		this.snapLines.length = 0
-		
-		// for(; i < this.data.length; i++) {
-		// 	for(; j < this.data[i].length; j++) {
-		// 		if(i === index) {
-		// 			break
-		// 		}
-		// 		if(this.data[i][j] === c[j]) {
-		// 			var dir
-		// 			if(j === 0 || j === 4 || j === 5) {
-		// 				dir = 'x'
-		// 			} else {
-		// 				dir = 'y'
-		// 			}
-		// 			this.snapLines.push({
-		// 				dir: dir,
-		// 				position: c[j]
-		// 			})
-		// 			break
-		// 		}
-		// 	}
-		// }
-		// for(k in this.data) {
-		// 	if(k === key) {
-		// 		continue
-		// 	}
-		// 	data = this.data[k] 
-		// 	len = data.length   // len也等于coordinate的长度
-		// 	for(; i < len; i++) {
-		// 		for()
-		// 	}
-		// }
+
 		len = coordinate.length
 		
 		for(; i < len; i++) {
@@ -473,24 +501,23 @@ $(function() {
 		})
 		$ele.draggable({
 			drag: function(w, h, l, t) {
-
 					key = $ele.data('key')
 					coordinate = self._getKeyPlace(w, h, l, t)
 
 					self._hideSnapLines()
 					self.$consoleX.text(l)
 					self.$consoleY.text(t)
-					self._refreshCanvas(key, coordinate)
-					
-					
+					self._refreshCanvas(key, coordinate)		
 			},
 			stop: function() {
+
 					self._hideSnapLines()
 					// 更新数据
+					// @todo: bug
 					self.data[key] = coordinate
 			}
-		})
 
+		})
 		$ele.dblclick(function() {
 			var $this = $(this),
 				$innerInput = $this.find('input'),
@@ -506,13 +533,14 @@ $(function() {
 					$innerInput.hide()
 					$innerSpan.show().text(value)
 					// 在更新完画布内容的时候，重新计算当前元素的
-					var width = $ele.width(),
-						height = $ele.height(),
-						position = $ele.position(),
+					var width = $this.width(),
+						height = $this.height(),
+						position = $this.position(),
 						coordinate = self._getKeyPlace(width, height, position.left, position.top),
-						key = $ele.data('key')
-					self.data[key] = coordinate
+						key = $this.data('key')
+					self._addData(key, coordinate)
 				}
+				$innerInput.off('blur')
 			})
 
 		})

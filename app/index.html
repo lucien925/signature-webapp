@@ -95,24 +95,55 @@
                             </li>
                         </ul>
                         <div class="signature-toolbar">
-                            <div class="toolbar-button toolbar-font-size">
-                                <input type="number" min="12" max="100">
+                            <div class="toolbar-button toolbar-font-size disabled">
+                                <div class="spinner-input">
+                                    <input>
+                                </div>
+                                <div class="buttons">
+                                    <div class="spinner-up"></div>
+                                    <div class="spinner-down"></div>
+                                </div>
                             </div>
-                            <div class="toolbar-button toolbar-button toolbar-font-family">
-                                <select name="" id="">
-                                    <option value="">微软雅黑</option>
-                                </select>
+                            <div class="toolbar-button toolbar-button toolbar-font-family disabled">
+                                <div class="dropdown-content">
+                                    <span class="dropdown-content-text"></span>
+                                    <span class="icon down"></span>
+                                </div>
+                                <ul id="fontList" class="font-list dropdown">
+                                    <li style="font-family: Arial">Arial</li>
+                                    <li style="font-family: Verdana">Verdana</li>
+                                    <li style="font-family: Georgia">Georgia</li>
+                                    <li style="font-family: Times New Roman">Times New Roman</li>
+                                    <li style="font-family: Courier New">Courier New</li>
+                                    <li style="font-family: Impact">Impact</li>
+                                    <li style="font-family: Comic Sans MS">Comic Sans MS</li>
+                                    <li style="font-family: Tahoma">Tahoma</li>
+                                    <li style="font-family: Garamond">Garamond</li>
+                                    <li style="font-family: Lucida Console"><div class="ico ico_selected"></div>Lucida Console</li>
+                                    <li class="devider"></li>
+                                    <li style="font-family: 宋体">宋体</li>
+                                    <li style="font-family: 微软雅黑">微软雅黑</li>
+                                    <li style="font-family: 黑体">黑体</li>
+                                </ul>
                             </div>
-                            <div class="toolbar-button toolbar-font-color">
-                                <input type="color">
+                            <div class="toolbar-button toolbar-font-weight disabled">
+                                <div class="icon bold"></div>
+                            </div>
+                            <div class="toolbar-button toolbar-font-style disabled">
+                                <div class="icon italic"></div>
+                            </div>
+                            <div class="toolbar-button toolbar-font-color disabled">
+                                <div class="icon font"></div>
+                                <div class="font-color"></div>
+                                <div class="icon down"></div>
                             </div>
                             <div class="toolbar-button toolbar-image-upload">
                                 <label for="upload">上传图片</label>
                                 <input id="upload" type="file">
                             </div>
                             <div class="toolbar-console">
-                                X:<span class="x">123</span>
-                                Y:<span class="y">123</span>
+                                X:<span class="x">0</span>
+                                Y:<span class="y">0</span>
                             </div>
 
                         </div>
@@ -128,10 +159,6 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="alert-mask show"></div>
-        <div class="alert show">
-            
-        </div> -->
         <script src="scripts/libs/jquery.js"></script>
         <script src="scripts/libs/jquery.draggable.js"></script>
         <script src="scripts/libs/cropper.min.js"></script>

@@ -37,9 +37,6 @@ $(function() {
 
 					if(opts.drag) {
 						var result = opts.drag(width, height, left, top)
-						if(result === false) {
-							return
-						}
 					}
 					$this.css({
 						left: left,
