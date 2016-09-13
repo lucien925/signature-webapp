@@ -1,6 +1,6 @@
 $(function() {
 	'use strict'
-	
+
 	var helper = {}
 
 	helper.loadCropper = function(file) {
@@ -18,7 +18,7 @@ $(function() {
 	   return uuid
 	}
 
-	helper.isRgb = function() {
+	helper.isRgb = function(str) {
 		return (str.match(/^rgba?/)).length > 0
 	}
 

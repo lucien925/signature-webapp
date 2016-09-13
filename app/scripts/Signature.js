@@ -163,7 +163,7 @@ $(function() {
 												   .replace('{{value}}', config[label].default)
 				} else if(type === 'image') {
 					html = TMPL_CONFIG.propImageTmpl.replace('{{label}}', label)
-												   .replace('{{type}}', type)
+												    .replace('{{type}}', type)
 				}
 				var styles = {},
 					$ele = $(html),
@@ -188,7 +188,6 @@ $(function() {
 				}
 
 				$ele.css(styles)
-				// todo: 以index为索引的数据存储有问题 
 				self.initStaffs($ele)
 			},
 			click: function(e) {
@@ -378,7 +377,7 @@ $(function() {
 				}
 				data = this.data[k]
 
-				//比较当前移动的物体的x轴中心点、x轴左变、x轴右边是否和面板中的欠他元素有重叠
+				//比较当前移动的物体的x轴中心点、x轴左变、x轴右边是否和面板中的其他元素有重叠
 				if(coordinate[0] === data[0]) {
 					this.snapLines.push({
 						dir: 'x',
@@ -444,11 +443,13 @@ $(function() {
 		this.$snapLineY.hide()
 	}
 	Signature.prototype._deleteEle = function($ele) {
-		
-		var index = parseInt($ele.data('index'), 10)
-		this.data.splice(index, 1)
-
+		// 删除当前元素存储的坐标信息
+		var key = $ele.data('key')
+		delete this.data[key]
+        
+        // 移除所有对该元素绑定的事件
 		$ele.off()
+		// 在DOM中删除该元素
 		$ele.remove()
 	}
 
@@ -504,6 +505,13 @@ $(function() {
 				} else {
 					$innerInput.hide()
 					$innerSpan.show().text(value)
+					// 在更新完画布内容的时候，重新计算当前元素的
+					var width = $ele.width(),
+						height = $ele.height(),
+						position = $ele.position(),
+						coordinate = self._getKeyPlace(width, height, position.left, position.top),
+						key = $ele.data('key')
+					self.data[key] = coordinate
 				}
 			})
 
