@@ -100,7 +100,7 @@ $(function() {
 
 		self.$toolbarFontColor.clickToggle(function() {
 			$(this).addClass('selected')
-			
+
 		}, function() {
 			$(this).removeClass('selected')
 
@@ -290,6 +290,8 @@ $(function() {
 				styles = $this.css([
 							'fontFamily',
 							'fontSize',
+							'fontWeight',
+							'fontStyle',
 							'color',
 							'left',
 							'top'
@@ -297,6 +299,7 @@ $(function() {
 			
 			self.$container.find('[data-role="label"]').removeClass('selected')
 			$this.addClass('selected')
+
 			self._adjustToolbar(type, styles)
 		})
 	}
@@ -304,40 +307,33 @@ $(function() {
 	Signature.prototype._adjustToolbar = function(type, styles) {
 		this._resetToolbar()
 
-		var $imageLabel = $('.toolbar-image-upload > label'),
-			$fontSizeInput = $('.toolbar-font-size > input'),
-			$fontFamilySelect = $('.toolbar-font-family > select'),
-			$fontColorInput = $('.toolbar-font-color > input')
+		// var $imageLabel = $('.toolbar-image-upload > label'),
+		// 	$fontSizeInput = $('.toolbar-font-size > input'),
+		// 	$fontFamilySelect = $('.toolbar-font-family > select'),
+		// 	$fontColorInput = $('.toolbar-font-color > input')
 
-		var position = this.$focusCtx.position()
-		this.$consoleX.text(position.left)
-		this.$consoleY.text(position.top)
-		if(type === 'text') {
-			$imageLabel.addClass('disabled')
-			$fontSizeInput.val(parseInt(styles.fontSize, 10))
-			$fontFamilySelect.val(styles.fontFamily)
-			var color = styles.color
-			if(helper.isRgb(color)) {
-				color = helper.rgb2hex(color)
-			}
-			$fontColorInput.val(color)
-		} else if(type === 'image') {
-			$fontSizeInput.prop('disabled', true)
-			$fontFamilySelect.prop('disabled', true)
-			$fontColorInput.prop('disabled', true)
-		}
+		// var position = this.$focusCtx.position()
+		// this.$consoleX.text(styles.left)
+		// this.$consoleY.text(styles.top)
+		// if(type === 'text') {
+		// 	$imageLabel.addClass('disabled')
+		// 	$fontSizeInput.val(parseInt(styles.fontSize, 10))
+		// 	$fontFamilySelect.val(styles.fontFamily)
+		// 	var color = styles.color
+		// 	if(helper.isRgb(color)) {
+		// 		color = helper.rgb2hex(color)
+		// 	}
+		// 	$fontColorInput.val(color)
+		// } else if(type === 'image') {
+		// 	$fontSizeInput.prop('disabled', true)
+		// 	$fontFamilySelect.prop('disabled', true)
+		// 	$fontColorInput.prop('disabled', true)
+		// }
 	}
 
 	Signature.prototype._resetToolbar = function() {
 
-		var $imageLabel = $('.toolbar-image-upload > label'),
-			$fontSizeInput = $('.toolbar-font-size > input'),
-			$fontFamilySelect = $('.toolbar-font-family > select'),
-			$fontColorInput = $('.toolbar-font-color > input')
-		$imageLabel.removeClass('disabled')
-		$fontSizeInput.prop('disabled', false)
-		$fontFamilySelect.prop('disabled', false)
-		$fontColorInput.prop('disabled', false)
+		
 
 	}
 
