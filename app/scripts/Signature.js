@@ -92,23 +92,61 @@ $(function() {
 	}
 
 	Signature.prototype.initToolbarEvent = function() {
-		var self = this
+		var self = this,
+			$fontList = $('#fontList'),
+			$colorPicker = $('#colorPicker')
 		self.$imageUploadInput = $('.toolbar-image-upload > input'),
 		self.$fontSizeInput = $('.toolbar-font-size input'),
 		self.$toolbarFontFamily = $('.toolbar-font-family'),
 		self.$toolbarFontColor = $('.toolbar-font-color')
+		self.$toolbarFontSize = $('.toolbar-font-size')
+		self.$toolbarImageUpload = $('.toolbar-image-upload')
 
-		self.$toolbarFontColor.clickToggle(function() {
-			$(this).addClass('selected')
+		self.$toolbarFontColor.click(function(e) {
+			var $this = $(this),
+				$target = $(e.target)
+			
+			if($this.hasClass('selected')) {
+				$this.removeClass('selected')
+				$colorPicker.hide()
+			} else {
+				$this.addClass('selected')				
+				$colorPicker.show()	
+			}
 
-		}, function() {
-			$(this).removeClass('selected')
+
 
 		})
-		self.$toolbarFontFamily.clickToggle(function() {
-			$(this).addClass('selected')
-		}, function() {
-			$(this).removeClass('selected')
+		$colorPicker.find('.color-list > div').click(function() {
+			var bgColor = $(this).css('background-color')
+			self.$toolbarFontColor.find('.font-color').css({
+				backgroundColor: bgColor
+			})
+			self.$focusCtx.css({
+				color: bgColor
+			})
+		})
+		self.$toolbarFontColor.find('input').click(function(e) {
+			e.stopPropagation()
+		})
+		self.$toolbarFontFamily.click(function() {
+			var $this = $(this)
+			if($this.hasClass('selected')) {
+				$this.removeClass('selected')
+				$fontList.hide()
+			} else {
+				$this.addClass('selected')
+				$fontList.show()
+			}
+		})
+		$fontList.find('li').click(function() {
+			var fontFamily = $(this).text()
+			self.$toolbarFontFamily.find('.dropdown-content-text').text(fontFamily)
+			self.$focusCtx.css({
+				fontFamily: fontFamily
+			})
+			$fontList.hide()
+
 		})
 		self.$imageUploadInput.on('change', function(e) {
 			var file = e.target.files[0],
@@ -132,7 +170,7 @@ $(function() {
 			})
 		})
 
-		$('.toolbar-font-size').find('.spinner-up').click(function() {
+		self.$toolbarFontSize.find('.spinner-up').click(function() {
 			var fontSize = parseFloat(self.$fontSizeInput.val())
 			if(fontSize === 100) {
 				return
@@ -143,9 +181,9 @@ $(function() {
 				fontSize: fontSizeStr
 			})
 		})
-		$('.toolbar-font-size').find('.spinner-down').click(function() {
+		self.$toolbarFontSize.find('.spinner-down').click(function() {
 			var fontSize = parseFloat(self.$fontSizeInput.val())
-			if(fontSize === 12) {
+			if(fontSize === 12) { 
 				return
 			}
 			var fontSizeStr = --fontSize + 'px'
@@ -157,29 +195,34 @@ $(function() {
 
 		self.$toolbarFontWeight = $('.toolbar-font-weight')
 		self.$toolbarFontStyle = $('.toolbar-font-style')
-		self.$toolbarFontStyle.clickToggle(function() {
-			$(this).addClass('selected')
-			self.$focusCtx.css({
-				fontStyle: 'italic'
-			})
-		}, function() {
-			$(this).removeClass('selected')
-			self.$focusCtx.css({
-				fontStyle: 'normal'
-			})
+		self.$toolbarFontStyle.click(function() {
+			var $this = $(this)
+			if($this.hasClass('selected')) {
+				$this.removeClass('selected')
+				self.$focusCtx.css({
+					fontStyle: 'normal'
+				})
+			} else {
+				$this .addClass('selected')
+				self.$focusCtx.css({
+					fontStyle: 'italic'
+				})
+			}
 		})
-		self.$toolbarFontWeight.clickToggle(function() {
-			$(this).addClass('selected')
-			self.$focusCtx.css({
-				fontWeight: 'bold'
-			})
-		}, function() {
-			$(this).removeClass('selected')
-			self.$focusCtx.css({
-				fontWeight: 'normal'
-			})
+		self.$toolbarFontWeight.click(function() {
+			var $this = $(this)
+			if($this.hasClass('selected')) {
+				$this.removeClass('selected')
+				self.$focusCtx.css({
+					fontWeight: 'normal'
+				})
+			} else {
+				$this.addClass('selected')
+				self.$focusCtx.css({
+					fontWeight: 'bold'
+				})
+			}
 		})
-
 	}
 
 	Signature.prototype.initPropsEvent = function() {
@@ -307,28 +350,26 @@ $(function() {
 	Signature.prototype._adjustToolbar = function(type, styles) {
 		this._resetToolbar()
 
-		// var $imageLabel = $('.toolbar-image-upload > label'),
-		// 	$fontSizeInput = $('.toolbar-font-size > input'),
-		// 	$fontFamilySelect = $('.toolbar-font-family > select'),
-		// 	$fontColorInput = $('.toolbar-font-color > input')
+		if(type === 'text') {
+			$('.toolbar-button').removeClass('disabled')
 
-		// var position = this.$focusCtx.position()
-		// this.$consoleX.text(styles.left)
-		// this.$consoleY.text(styles.top)
-		// if(type === 'text') {
-		// 	$imageLabel.addClass('disabled')
-		// 	$fontSizeInput.val(parseInt(styles.fontSize, 10))
-		// 	$fontFamilySelect.val(styles.fontFamily)
-		// 	var color = styles.color
-		// 	if(helper.isRgb(color)) {
-		// 		color = helper.rgb2hex(color)
-		// 	}
-		// 	$fontColorInput.val(color)
-		// } else if(type === 'image') {
-		// 	$fontSizeInput.prop('disabled', true)
-		// 	$fontFamilySelect.prop('disabled', true)
-		// 	$fontColorInput.prop('disabled', true)
-		// }
+			this.$fontSizeInput.val(styles.fontSize)
+			this.$toolbarFontFamily.find('.dropdown-content-text').text(styles.fontFamily)
+			this.$toolbarFontColor.find('.font-color').css({
+				backgroundColor: styles.color
+			})
+			this.$toolbarImageUpload.addClass('disabled')
+			if(styles.fontWeight === 'bold') {
+				this.$toolbarFontWeight.addClass('selected')
+			} else {
+				this.$toolbarFontWeight.removeClass('selected')
+			}
+			if(styles.fontStyle === 'italic') {
+				this.$toolbarFontStyle.addClass('selected')
+			} else {
+				this.$toolbarFontStyle.removeClass('selected')
+			}
+		}
 	}
 
 	Signature.prototype._resetToolbar = function() {
@@ -509,8 +550,10 @@ $(function() {
 
 					self._hideSnapLines()
 					// 更新数据
-					// @todo: bug
-					self.data[key] = coordinate
+					if(key && coordinate) {
+
+						self.data[key] = coordinate
+					}
 			}
 
 		})
