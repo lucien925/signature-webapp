@@ -15,18 +15,6 @@ $(function() {
     };
 	var TMPL_CONFIG = {
 
-		textTmpl: '<div class="">' + 
-						'<span class=""></span>' + 
-						'<span class=""></span>' +
-				  '</div>',
-
-		imageTmpl: '<div class="">' +
-						'<div class="">' + 
-							'<img src="" alt="">' +
-						'</div>' +
-						'<p></p>' +
-					'</div>',
-
 		snapLineXTmpl: '<div class="guide-line-x"></div>',
 
 		snapLineYTmpl: '<div class="guide-line-y"></div>',
@@ -52,12 +40,13 @@ $(function() {
 		alterModalText: '<div class="alter-modal alter-modal-text">' +
 
 						'</div>',
-		propTextTmpl: 	'<div data-role="label" data-type="{{type}}" data-label="{{label}}">' +
+		propTextTmpl: 	'<div class="canvas-text" data-role="label" data-type="{{type}}" data-label="{{label}}">' +
 							'<input type="text">' +
 							'<span class="label-value">{{value}}</span>'+
 						'</div>',
-		propImageTmpl: '<div data-role="label" data-type="{{type}}" data-label="{{label}}">' +
-					   	   '<img src="../images/lucienyu.png" width="80" height="80">' + 
+		propImageTmpl: '<div class="canvas-image" data-role="label" data-type="{{type}}" data-label="{{label}}">' +
+					   	   '<img src="../images/lucienyu.png">' + 
+					   	   '<div data-action="resize"></div>' +
 					   '</div>'
 	}
 
@@ -67,10 +56,10 @@ $(function() {
 		this.data = {}
 		this.snapLines = []
 		this.$focusCtx = null
+		this.$contextMenuCtx = null
 		this.$snapLineX = $(TMPL_CONFIG.snapLineXTmpl)
 		this.$snapLineY = $(TMPL_CONFIG.snapLineYTmpl)
 		this.$contextMenu = $(TMPL_CONFIG.contextMenu)
-		this.$contextMenuCtx = null
 		this.propsInfo = {}
 		this.init()
 	}
@@ -86,9 +75,70 @@ $(function() {
 		if($labels.length > 0) {
 			this.initStaffs($labels)
 		}
+		this.initGlobalEvent()
 		this.initContainerEvent()
 		this.initPropsEvent()
 		this.initToolbarEvent()
+	}
+
+	Signature.prototype.initGlobalEvent = function() {
+		var $document = $(document),
+			self = this,
+			isCtrlAndCommand = {
+				control: false,
+				command: false
+			}
+
+		$document.on('keydown', function(e) {
+			var keyCode  = e.keyCode,
+				$ctx = self.$focusCtx,
+				crossIncrease = 0,
+				verticalIncrease = 0
+			if(keyCode === 17) {
+				isCtrlAndCommand.control = true
+			} else if(keyCode === 91) {
+				isCtrlAndCommand.command = true
+			} else if($ctx) {
+				switch(keyCode) {
+					case 37:    // left
+						crossIncrease = -10
+						break
+					case 38:    // up
+						verticalIncrease = -10
+						break
+					case 39:    // right
+						crossIncrease = 10
+						break
+					case 40:    // down
+						verticalIncrease = 10
+						break;
+					default:
+						break
+				}
+				// 判断是否按住了control键，如果按住了control，则x/y轴的位置更改
+				// 变为原来的十分之一
+				if(isCtrlAndCommand.control && isCtrlAndCommand.command) {
+					crossIncrease = crossIncrease / 10
+					verticalIncrease = verticalIncrease / 10
+				}
+				$ctx.css({
+					left: '+=' + crossIncrease,
+					top: '+=' + verticalIncrease
+				})
+				var position = $ctx.position()
+				self._rewriteConsole(position.left, position.top)
+			}
+		})
+		$document.on('keyup', function(e) {
+			var keyCode = e.keyCode
+			if(keyCode === 17) {
+				isCtrlAndCommand.control = false
+			}
+			if(keyCode === 91) {
+				isCtrlAndCommand.command = false
+			}
+			
+		})
 	}
 
 	Signature.prototype.initToolbarEvent = function() {
@@ -113,10 +163,8 @@ $(function() {
 				$this.addClass('selected')				
 				$colorPicker.show()	
 			}
-
-
-
 		})
+
 		$colorPicker.find('.color-list > div').click(function() {
 			var bgColor = $(this).css('background-color')
 			self.$toolbarFontColor.find('.font-color').css({
@@ -126,9 +174,39 @@ $(function() {
 				color: bgColor
 			})
 		})
+
 		self.$toolbarFontColor.find('input').click(function(e) {
 			e.stopPropagation()
 		})
+
+		self.$toolbarFontColor.find('input').on({
+			click: function(e) {
+				e.stopPropagation()
+			},
+			keyup: function(e) {
+				e.stopPropagation()
+				var keyCode = e.keyCode
+				if(keyCode === 13) {      // 颜色输入框按下enter键时
+					var value = $(this).val(),
+						color = '#' + value
+					if(helper.isColor(color)) {
+						$colorPicker.hide()
+						$(this).removeClass('selected')
+						self.$toolbarFontColor.find('.font-color').css({
+							backgroundColor: color
+						})
+						self.$focusCtx.css({
+							color: color
+						})
+					} else {
+						$(this).css({
+							borderColor: 'red'
+						})
+					}
+				}
+			}
+		})
+
 		self.$toolbarFontFamily.click(function() {
 			var $this = $(this)
 			if($this.hasClass('selected')) {
@@ -139,6 +217,7 @@ $(function() {
 				$fontList.show()
 			}
 		})
+
 		$fontList.find('li').click(function() {
 			var fontFamily = $(this).text()
 			self.$toolbarFontFamily.find('.dropdown-content-text').text(fontFamily)
@@ -148,6 +227,7 @@ $(function() {
 			$fontList.hide()
 
 		})
+
 		self.$imageUploadInput.on('change', function(e) {
 			var file = e.target.files[0],
 				reader = new FileReader(),
@@ -181,6 +261,7 @@ $(function() {
 				fontSize: fontSizeStr
 			})
 		})
+
 		self.$toolbarFontSize.find('.spinner-down').click(function() {
 			var fontSize = parseFloat(self.$fontSizeInput.val())
 			if(fontSize === 12) { 
@@ -209,6 +290,7 @@ $(function() {
 				})
 			}
 		})
+
 		self.$toolbarFontWeight.click(function() {
 			var $this = $(this)
 			if($this.hasClass('selected')) {
@@ -223,6 +305,8 @@ $(function() {
 				})
 			}
 		})
+		// 初始化工具栏的所有事件后，重置工具栏
+		self._resetToolbar()
 	}
 
 	Signature.prototype.initPropsEvent = function() {
@@ -266,11 +350,13 @@ $(function() {
 				}
 				var styles = {},
 					$ele = $(html),
-					width, height
+					width, height, left, top
 
 				self.$container.append($ele)
-				width = $ele.width(),
+				width = $ele.width()
 				height = $ele.height()
+				left = e.offsetX - (width / 2)
+				top = e.offsetY - (height / 2)
 				if(type === 'text') {
 					styles = {
 						left: e.offsetX - (width / 2),
@@ -287,9 +373,12 @@ $(function() {
 						cursor: 'move'
 					}
 				}
-
-				$ele.css(styles)
+				self.$container.find('[data-role="label"]').removeClass('selected')
+				$ele.css(styles).addClass('selected')
+				self.$focusCtx = $ele
 				self.initStaffs($ele)
+				self._adjustToolbar(type, styles)
+				self._rewriteConsole(left, top)
 			},
 			click: function(e) {
 				self.$contextMenu.hide()
@@ -369,13 +458,18 @@ $(function() {
 			} else {
 				this.$toolbarFontStyle.removeClass('selected')
 			}
+		} else if(type === 'image') {
+			this.$toolbarImageUpload.removeClass('disabled')
 		}
 	}
 
 	Signature.prototype._resetToolbar = function() {
-
-		
-
+		this.$toolbarFontSize.addClass('disabled')
+		this.$toolbarFontFamily.addClass('disabled')
+		this.$toolbarFontColor.addClass('disabled')
+		this.$toolbarImageUpload.addClass('disabled')
+		this.$toolbarFontWeight.removeClass('selected').addClass('disabled')
+		this.$toolbarFontStyle.removeClass('selected').addClass('disabled')
 	}
 
 	Signature.prototype.initStaffs = function($ele) {
@@ -511,7 +605,8 @@ $(function() {
 		// 删除当前元素存储的坐标信息
 		var key = $ele.data('key')
 		delete this.data[key]
-        
+		// 重置工具栏
+		this._resetToolbar()
         // 移除所有对该元素绑定的事件
 		$ele.off()
 		// 在DOM中删除该元素
@@ -525,7 +620,10 @@ $(function() {
 						 	top: position.top
 						 })
 	}
-
+	Signature.prototype._rewriteConsole = function(left, top) {
+		this.$consoleX.text(left)
+		this.$consoleY.text(top)
+	}
 	Signature.prototype._bindEvent = function($ele) {
  
 		var self = this,
@@ -542,8 +640,7 @@ $(function() {
 					coordinate = self._getKeyPlace(w, h, l, t)
 
 					self._hideSnapLines()
-					self.$consoleX.text(l)
-					self.$consoleY.text(t)
+					self._rewriteConsole(l, t)
 					self._refreshCanvas(key, coordinate)		
 			},
 			stop: function() {

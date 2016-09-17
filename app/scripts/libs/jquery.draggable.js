@@ -8,7 +8,9 @@ $(function() {
 			var $this = $(this),
 				params = {
 					left: 0,
-					top: 0
+					top: 0,
+					width: 0,
+					height: 0
 				},
 				opts = opts || {},
 				position = $this.position(),
@@ -17,6 +19,8 @@ $(function() {
 				$document = $(document)
 			params.left = position.left
 			params.top = position.top
+			params.width = width
+			params.height = height
 			
 			$this.on('mousedown', function(e) {
 				var startX = e.clientX,
@@ -24,25 +28,48 @@ $(function() {
 				$(window).on('selectstart', function() {
 					return false
 				})
-				$document.on('mousemove', function(e) {
-					e.preventDefault()
-					e.stopPropagation()
+				var $target = $(e.target)
+				if($target.attr('data-action') === 'resize') {
+					$document.on('mousemove', function(e) {
+						e.preventDefault()
+						e.stopPropagation()
 
-					var nowX = e.clientX,
-						nowY = e.clientY,
-						disX = nowX - startX,
-						disY = nowY - startY
-					var left = params.left + disX,
-						top = params.top + disY
-
-					if(opts.drag) {
-						var result = opts.drag(width, height, left, top)
-					}
-					$this.css({
-						left: left,
-						top: top
+						var nowX = e.clientX,
+							nowY = e.clientY,
+							disX = nowX - startX,
+							disY = nowY - startY
+						if(width > 10 /* min-width */) {
+							$this.css({
+								width: params.width + disX
+							})
+						}	
+						if(height > 10 /* min-height */) {
+							$this.css({
+								height: params.height +disY
+							})
+						}
 					})
-				})
+				} else {
+					$document.on('mousemove', function(e) {
+						e.preventDefault()
+						e.stopPropagation()
+
+						var nowX = e.clientX,
+							nowY = e.clientY,
+							disX = nowX - startX,
+							disY = nowY - startY
+						var left = params.left + disX,
+							top = params.top + disY
+
+						if(opts.drag) {
+							var result = opts.drag(width, height, left, top)
+						}
+						$this.css({
+							left: left,
+							top: top
+						})
+					})
+				} 
 
 				$document.on('mouseup', function(e) {
 					e.preventDefault()
@@ -52,14 +79,12 @@ $(function() {
 						opts.stop($this)
 					}
 					var _position = $this.position()
-					// 在拖拽范围没达到临界值时，也同时触发点击事件
-					if(Math.abs(_position.left - params.left) < 5 
-						&& Math.abs(_position.top - params.top) < 5) {
-						// 避免触发click事件
-						$this.trigger('specialClick')
-					}
-					params.left = _position.left,
+
+					params.left = _position.left
 					params.top = _position.top
+					params.width = $this.width()
+					params.height = $this.height()
+					console.log(params)
 				})
 			})		
 		}

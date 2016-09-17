@@ -29,7 +29,9 @@ $(function() {
 	  		("0" + parseInt(rgb[1],10).toString(16)).slice(-2) +
 	  		("0" + parseInt(rgb[2],10).toString(16)).slice(-2) +
 	  		("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : ''
-	  	
+	}
+	helper.isColor = function(color) {
+		return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color)
 	}
 
 	window.helper = helper
