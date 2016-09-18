@@ -62,6 +62,7 @@ $(function() {
 		this.$contextMenu = $(TMPL_CONFIG.contextMenu)
 		this.propsInfo = {}
 		this.init()
+		window.data = this.data
 	}
 
 	Signature.prototype.init = function() {
@@ -127,6 +128,7 @@ $(function() {
 				})
 				var position = $ctx.position()
 				self._rewriteConsole(position.left, position.top)
+				self._updateDateByEle(self.$focusCtx)
 			}
 		})
 		$document.on('keyup', function(e) {
@@ -145,12 +147,17 @@ $(function() {
 		var self = this,
 			$fontList = $('#fontList'),
 			$colorPicker = $('#colorPicker')
+
 		self.$imageUploadInput = $('.toolbar-image-upload > input'),
 		self.$fontSizeInput = $('.toolbar-font-size input'),
 		self.$toolbarFontFamily = $('.toolbar-font-family'),
 		self.$toolbarFontColor = $('.toolbar-font-color')
 		self.$toolbarFontSize = $('.toolbar-font-size')
 		self.$toolbarImageUpload = $('.toolbar-image-upload')
+		self.$toolbarFontWeight = $('.toolbar-font-weight')
+		self.$toolbarFontStyle = $('.toolbar-font-style')
+
+		var $colorInput = self.$toolbarFontColor.find('input')
 
 		self.$toolbarFontColor.click(function(e) {
 			var $this = $(this),
@@ -165,21 +172,25 @@ $(function() {
 			}
 		})
 
-		$colorPicker.find('.color-list > div').click(function() {
-			var bgColor = $(this).css('background-color')
-			self.$toolbarFontColor.find('.font-color').css({
-				backgroundColor: bgColor
-			})
-			self.$focusCtx.css({
-				color: bgColor
-			})
+		$colorPicker.find('.color-list > div').on({
+			click: function() {
+				var bgColor = $(this).css('background-color')
+				self.$toolbarFontColor.find('.font-color').css({
+					backgroundColor: bgColor
+				})
+				self.$focusCtx.css({
+					color: bgColor
+				})
+			},
+			mouseover: function() {
+				var color = $(this).css('backgroundColor'),
+					hexColor = helper.rgb2hex(color)
+
+				$colorInput.val(hexColor.slice(1)) 
+			}
 		})
 
-		self.$toolbarFontColor.find('input').click(function(e) {
-			e.stopPropagation()
-		})
-
-		self.$toolbarFontColor.find('input').on({
+		$colorInput.on({
 			click: function(e) {
 				e.stopPropagation()
 			},
@@ -199,6 +210,7 @@ $(function() {
 							color: color
 						})
 					} else {
+						// 提示用户颜色值输入不合法
 						$(this).css({
 							borderColor: 'red'
 						})
@@ -224,6 +236,7 @@ $(function() {
 			self.$focusCtx.css({
 				fontFamily: fontFamily
 			})
+			self.
 			$fontList.hide()
 
 		})
@@ -241,15 +254,6 @@ $(function() {
 			reader.readAsDataURL(file)
 		})	
 
-		// input type=number 
-		self.$fontSizeInput.on('change', function() {
-			var $this = $(this),
-				value = $this.val()
-			self.$focusCtx.css({
-				fontSize: value + 'px'
-			})
-		})
-
 		self.$toolbarFontSize.find('.spinner-up').click(function() {
 			var fontSize = parseFloat(self.$fontSizeInput.val())
 			if(fontSize === 100) {
@@ -260,6 +264,7 @@ $(function() {
 			self.$focusCtx.css({
 				fontSize: fontSizeStr
 			})
+			self._updateDateByEle(self.$focusCtx)
 		})
 
 		self.$toolbarFontSize.find('.spinner-down').click(function() {
@@ -272,10 +277,10 @@ $(function() {
 			self.$focusCtx.css({
 				fontSize: fontSizeStr
 			})
+			self._updateDateByEle(self.$focusCtx)
+
 		})
 
-		self.$toolbarFontWeight = $('.toolbar-font-weight')
-		self.$toolbarFontStyle = $('.toolbar-font-style')
 		self.$toolbarFontStyle.click(function() {
 			var $this = $(this)
 			if($this.hasClass('selected')) {
@@ -289,6 +294,7 @@ $(function() {
 					fontStyle: 'italic'
 				})
 			}
+			self._updateDateByEle(self.$focusCtx)
 		})
 
 		self.$toolbarFontWeight.click(function() {
@@ -304,6 +310,7 @@ $(function() {
 					fontWeight: 'bold'
 				})
 			}
+			self._updateDateByEle(self.$focusCtx)
 		})
 		// 初始化工具栏的所有事件后，重置工具栏
 		self._resetToolbar()
@@ -499,6 +506,15 @@ $(function() {
 			l,					//   left
 			l + w				//	 right
 		]
+	}
+	Signature.prototype._updateDateByEle = function($ele) {
+		console.log('update')
+		var width = $ele.width(),
+			height = $ele.height(),
+			position = $ele.position(),
+			key = $ele.data('key'),
+			coordinate = this._getKeyPlace(width, height, position.left, position.top)
+		this._addData(key, coordinate)
 	}
 
 	Signature.prototype._addData = function(key, coordinate) {
