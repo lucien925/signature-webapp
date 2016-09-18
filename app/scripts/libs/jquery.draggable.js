@@ -24,7 +24,11 @@ $(function() {
 			
 			$this.on('mousedown', function(e) {
 				var startX = e.clientX,
-					startY = e.clientY
+					startY = e.clientY,
+					position = $this.position()
+					
+				params.left = position.left
+				params.top = position.top
 				$(window).on('selectstart', function() {
 					return false
 				})
@@ -47,6 +51,9 @@ $(function() {
 							$this.css({
 								height: params.height +disY
 							})
+						}
+						if(opts.resize) {
+							opts.resize.call($this)
 						}
 					})
 				} else {
@@ -84,7 +91,6 @@ $(function() {
 					params.top = _position.top
 					params.width = $this.width()
 					params.height = $this.height()
-					console.log(params)
 				})
 			})		
 		}

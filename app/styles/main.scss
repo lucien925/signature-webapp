@@ -32,6 +32,12 @@ input, textarea{
         box-shadow: 0 0 1px rgba(255, 0, 0, .7)
     }
 }
+.l {
+    float: left;
+}
+.r {
+    float: right
+}
 .container {
     width: 1200px;
     margin: 0 auto;
@@ -115,6 +121,7 @@ input, textarea{
     min-height: 400px;
     background-color: #edeff0;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1) inset;
+    background-repeat: no-repeat;
     &.over {
         border-color: #ff0000;
     }

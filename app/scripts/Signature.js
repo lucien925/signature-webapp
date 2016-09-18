@@ -141,6 +141,24 @@ $(function() {
 			}
 			
 		})
+
+		$('#upload-bg input').change(function(e) {
+			// var data = new FormData()
+			// data.append('bg')
+			var file = e.target.files[0],
+				reader = new FileReader(),
+				URL = window.URL || window.webkitURL,
+				blobUrl
+			reader.onload = function(e) {
+				var result = e.target.result
+				self.$container.css({
+					backgroundImage: 'url(' + result +  ')'
+				})
+			}
+			reader.readAsDataURL(file)
+
+
+		})
 	}
 
 	Signature.prototype.initToolbarEvent = function() {
@@ -209,6 +227,7 @@ $(function() {
 						self.$focusCtx.css({
 							color: color
 						})
+						self.$toolbarFontColor.removeClass('selected')
 					} else {
 						// 提示用户颜色值输入不合法
 						$(this).css({
@@ -236,7 +255,6 @@ $(function() {
 			self.$focusCtx.css({
 				fontFamily: fontFamily
 			})
-			self.
 			$fontList.hide()
 
 		})
@@ -438,11 +456,40 @@ $(function() {
 			
 			self.$container.find('[data-role="label"]').removeClass('selected')
 			$this.addClass('selected')
-
+			self._rewriteConsole(parseFloat(styles.left), parseFloat(styles.top))
 			self._adjustToolbar(type, styles)
 		})
 	}
+	Signature.prototype.initStaffs = function($ele) {
+		var self = this
+		$ele.each(function() {
+			var $this = $(this),
+				position = $this.position(),
+				width = $this.width(),
+				height = $this.height(),
+				key = helper.generateUUID(),  // uuid => key
+				coordinate
+			$this.data('key', key)
+			coordinate = self._getKeyPlace(width, height, position.left, position.top)
+			self._addData(key, coordinate)
+			self._bindEvent($this)
+		})
 
+	}
+	Signature.prototype.saveData = function() {
+		var $container = this.$container,
+			$labels = $container.find('[data-role="label"]'),
+			data = {}
+		$labels.each(function() {
+			var $this = $(this),
+				type = $this.attr('data-type'),
+				label = $this.atte('data-label'),
+				styles = {}
+
+
+		})
+
+	}
 	Signature.prototype._adjustToolbar = function(type, styles) {
 		this._resetToolbar()
 
@@ -479,36 +526,19 @@ $(function() {
 		this.$toolbarFontStyle.removeClass('selected').addClass('disabled')
 	}
 
-	Signature.prototype.initStaffs = function($ele) {
-		var self = this
-		$ele.each(function() {
-			var $this = $(this),
-				position = $this.position(),
-				width = $this.width(),
-				height = $this.height(),
-				key = helper.generateUUID(),  // uuid => key
-				coordinate
-			$this.data('key', key)
-			coordinate = self._getKeyPlace(width, height, position.left, position.top)
-			self._addData(key, coordinate)
-			self._bindEvent($this)
-		})
-
-	}
 
 	Signature.prototype._getKeyPlace = function(w, h, l, t) {
 
 		return [
-			l + (w / 2),		//   center-x
-			t + (h / 2),		//	 center-y
-			t,					//	 top
-			t + h,				//	 bottom
-			l,					//   left
-			l + w				//	 right
+			parseInt(l + (w / 2), 10),		    //   center-x
+			parseInt(t + (h / 2), 10),		    //	 center-y
+			parseInt(t, 10),					//	 top
+			parseInt(t + h, 10),				//	 bottom
+			parseInt(l, 10),					//   left
+			parseInt(l + w, 10)				    //	 right
 		]
 	}
 	Signature.prototype._updateDateByEle = function($ele) {
-		console.log('update')
 		var width = $ele.width(),
 			height = $ele.height(),
 			position = $ele.position(),
@@ -667,6 +697,9 @@ $(function() {
 
 						self.data[key] = coordinate
 					}
+			},
+			resize: function() {
+				self._updateDateByEle($(this))
 			}
 
 		})

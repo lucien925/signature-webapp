@@ -281,19 +281,26 @@
                         </div>
                     </div>
                     <div class="panel-footer">
-                        <button>发布模板</button>
-                        <button>保存模板</button>
-                        <button id="three">生成签名</button>
+                        <div class="l">
+                            <label id="upload-bg">
+                                <input type="file">
+                            </label>
+                        </div>
+                        <div class="r">
+                            <button>发布模板</button>
+                            <button>保存模板</button>
+                            <button id="three">生成签名</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <script src="scripts/libs/jquery.js"></script>
         <script src="scripts/libs/jquery.draggable.js"></script>
-        <script src="scripts/libs/cropper.min.js"></script>
-        <script src="scripts/libs/html2canvas.js"></script>
-        <script src="scripts/helper.js"></script>
+        <script src="scripts/libs/FileSaver.js"></script>
+        <script src="scripts/libs/dom-to-image.js"></script>
         <script src="scripts/Signature.js"></script>
+        <script src="scripts/helper.js"></script>
         <script src="scripts/config.js"></script>
         <script>
             $(function() {
@@ -304,8 +311,9 @@
                 })
 
                 $('#three').click(function() {
-                    html2canvas($('.signature-container').get(0)).then(function(canvas) {
-                        $('body').append(canvas)
+                    domtoimage.toBlob($('.signature-container').get(0))
+                        .then(function(blob) {
+                            window.saveAs(blob, 'my-node.png');
                     })
                 })
             })
